@@ -1,0 +1,14 @@
+{
+  "name": "battle-city",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/vorhtek/battle-city.git",
+  "author": "Archie G. <acgelonga@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "browser-sync": "^2.27.7",
+    "gulp": "^4.0.2",
+    "gulp-autoprefixer": "^8.0.0",
+    "gulp-dart-sass": "^1.0.2"
+  }
+}
