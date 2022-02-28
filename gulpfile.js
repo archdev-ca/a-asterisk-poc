@@ -31,6 +31,7 @@ gulp.task(
   })
 );
 
+// Create a task called `serve` which will run sass-tasks and many others
 gulp.task(
   "serve",
   gulp.series("sass-tasks", function () {
@@ -52,4 +53,5 @@ gulp.task(
   })
 );
 
+// Create the main task called `default` which will run the task `serve`
 gulp.task("default", gulp.series("serve"));
