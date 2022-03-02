@@ -12,7 +12,10 @@ let obstacles = {
 };
 let endPoints = { x: 8, y: 4 };
 let startPoints = { x: 1, y: 1 };
-let openNodes = [];
+let openNodes = {
+  list: [],
+  map: {},
+};
 let closedNodes = {
   list: [],
   map: {},
@@ -47,7 +50,7 @@ let endNode = updateNode(8, 4, {
 let endToEnd = getDistance(startNode, endNode);
 startNode.hCost = endToEnd;
 endNode.gCost = endToEnd;
-openNodes.push(startNode);
+openNodes.list.push(startNode);
 
 function PathNode(props = {}) {
   let { el, x, y, gCost = 0, hCost = 0, fCost = 0, parentNode } = props;
@@ -212,8 +215,12 @@ function getSurroundingNodes(x, y) {
     let hCost = getDistance(node, endNode);
     let fCost = gCost + hCost;
     node.parentNode = parentNode;
-    surroundingNodes.push(
-      updateNode(x, y - 1, {
+    if (
+      !isOpenNode(x, y - 1) ||
+      fCost < node.fCost ||
+      (fCost == node.fCost && hCost < node.hCost)
+    ) {
+      let updatedNode = updateNode(x, y - 1, {
         className: "open",
         html: `<i class="f">${fCost}</i><i class="g">${gCost}</i><i class="h">${hCost}</i>`,
         data: {
@@ -221,8 +228,10 @@ function getSurroundingNodes(x, y) {
           gCost,
           hCost,
         },
-      })
-    );
+      });
+      surroundingNodes.push(updatedNode);
+      openNode(updatedNode.x, updatedNode.y);
+    }
   }
   if (isValidCoords(x, y + 1)) {
     let node = nodes.map[x][y + 1];
@@ -230,8 +239,12 @@ function getSurroundingNodes(x, y) {
     let hCost = getDistance(node, endNode);
     let fCost = gCost + hCost;
     node.parentNode = parentNode;
-    surroundingNodes.push(
-      updateNode(x, y + 1, {
+    if (
+      !isOpenNode(x, y + 1) ||
+      fCost < node.fCost ||
+      (fCost == node.fCost && hCost < node.hCost)
+    ) {
+      let updatedNode = updateNode(x, y + 1, {
         className: "open",
         html: `<i class="f">${fCost}</i><i class="g">${gCost}</i><i class="h">${hCost}</i>`,
         data: {
@@ -239,8 +252,10 @@ function getSurroundingNodes(x, y) {
           gCost,
           hCost,
         },
-      })
-    );
+      });
+      surroundingNodes.push(updatedNode);
+      openNode(updatedNode.x, updatedNode.y);
+    }
   }
   if (isValidCoords(x - 1, y)) {
     let node = nodes.map[x - 1][y];
@@ -248,8 +263,12 @@ function getSurroundingNodes(x, y) {
     let hCost = getDistance(node, endNode);
     let fCost = gCost + hCost;
     node.parentNode = parentNode;
-    surroundingNodes.push(
-      updateNode(x - 1, y, {
+    if (
+      !isOpenNode(x - 1, y) ||
+      fCost < node.fCost ||
+      (fCost == node.fCost && hCost < node.hCost)
+    ) {
+      let updatedNode = updateNode(x - 1, y, {
         className: "open",
         html: `<i class="f">${fCost}</i><i class="g">${gCost}</i><i class="h">${hCost}</i>`,
         data: {
@@ -257,8 +276,10 @@ function getSurroundingNodes(x, y) {
           gCost,
           hCost,
         },
-      })
-    );
+      });
+      surroundingNodes.push(updatedNode);
+      openNode(updatedNode.x, updatedNode.y);
+    }
   }
   if (isValidCoords(x + 1, y)) {
     let node = nodes.map[x + 1][y];
@@ -266,8 +287,12 @@ function getSurroundingNodes(x, y) {
     let hCost = getDistance(node, endNode);
     let fCost = gCost + hCost;
     node.parentNode = parentNode;
-    surroundingNodes.push(
-      updateNode(x + 1, y, {
+    if (
+      !isOpenNode(x + 1, y) ||
+      fCost < node.fCost ||
+      (fCost == node.fCost && hCost < node.hCost)
+    ) {
+      let updatedNode = updateNode(x + 1, y, {
         className: "open",
         html: `<i class="f">${fCost}</i><i class="g">${gCost}</i><i class="h">${hCost}</i>`,
         data: {
@@ -275,8 +300,10 @@ function getSurroundingNodes(x, y) {
           gCost,
           hCost,
         },
-      })
-    );
+      });
+      surroundingNodes.push(updatedNode);
+      openNode(updatedNode.x, updatedNode.y);
+    }
   }
   return surroundingNodes;
 }
@@ -294,11 +321,13 @@ function isValidCoords(x, y) {
     x < gridX &&
     y > -1 &&
     y < gridY &&
-    !(closedNodes.map[x] && closedNodes.map[x][y]) &&
+    // Not closed Nodes
+    !isClosedNode(x, y) &&
+    // Not an obstacle node
     !(obstacles.map[x] && obstacles.map[x][y]) &&
-    !(startNode.x == x && startNode.y == y) &&
-    !(endNode.x == x && endNode.y == y) &&
-    !(closedNodes.map[x] && closedNodes.map[x][y])
+    // Not start or end node
+    !(startNode.x == x && startNode.y == y)
+    // !(endNode.x == x && endNode.y == y)
   ) {
     return true;
   }
@@ -308,18 +337,22 @@ function isValidCoords(x, y) {
 /**
  * Find the shortest path
  */
-let counter = 10;
+let counter = 1;
 function solve() {
   // Get surrounding nodes of startNode
   // Sort surrounding nodes by fCost, hCost
-  let node = openNodes.shift();
+  let node = openNodes.list.shift();
   node.el.className += " close";
+  if (node.x == endNode.x && node.y == endNode.y) {
+    tracebackNode(node);
+    return;
+  }
   closeNode(node.x, node.y);
   let surroundingNodes = getSurroundingNodes(node.x, node.y);
   for (let i = 0; i < surroundingNodes.length; i++) {
-    queueNode(openNodes, surroundingNodes[i]);
+    queueNode(openNodes.list, surroundingNodes[i]);
   }
-  setTimeout(function () {}, 1000);
+  counter += 1;
 }
 
 /**
@@ -360,10 +393,48 @@ function closeNode(x, y) {
 }
 
 /**
+ * Add this coordinate to openNodes
+ * @param {*} x
+ * @param {*} y
+ */
+function openNode(x, y) {
+  if (!openNodes.map[x]) {
+    openNodes.map[x] = {};
+  }
+  openNodes.map[x][y] = true;
+}
+
+/**
  * Check if this coordinate is a closed node
  * @param {*} x
  * @param {*} y
  */
 function isClosedNode(x, y) {
-  return closedNodes.map[x] && closedNodes.map[x][y];
+  return !!closedNodes.map[x] && closedNodes.map[x][y];
+}
+
+/**
+ * Check if this coordinate is an open node
+ * @param {*} x
+ * @param {*} y
+ * @returns
+ */
+function isOpenNode(x, y) {
+  return !!openNodes.map[x] && openNodes.map[x][y];
+}
+
+/**
+ * Walk the path to the parent node
+ * @param {*} node
+ * @returns
+ */
+function tracebackNode(node) {
+  console.log(node);
+  node.el.className += " route";
+  if (node.x == startNode.x && node.y == startNode.y) {
+    return;
+  }
+  if (node.parentNode) {
+    tracebackNode(node.parentNode);
+  }
 }

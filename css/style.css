@@ -24,7 +24,7 @@ body {
   position: absolute;
 }
 #canvas .cell * {
-  /* pointer-events: none; */
+  pointer-events: none;
 }
 
 #canvas .cell.endpoint {
@@ -44,6 +44,11 @@ body {
 
 #canvas .cell.close {
   background-color: #ff004c;
+  z-index: 2;
+}
+
+#canvas .cell.close.route {
+  background-color: #00a2ff !important;
   z-index: 2;
 }
 
