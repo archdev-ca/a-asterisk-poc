@@ -19,7 +19,7 @@ let closedNodes = {
 };
 
 function PathNode(props = {}) {
-  let { el, x, y, gCost, hCost, fCost, parentNode } = props;
+  let { el, x, y, gCost = 0, hCost = 0, fCost = 0, parentNode } = props;
   this.x = x;
   this.y = y;
   this.gCost = gCost;
@@ -33,6 +33,8 @@ function createNode(x, y, props = {}) {
   let { className, html } = props;
   let el = document.createElement("div");
   el.className = "cell";
+  el.dataset.x = x;
+  el.dataset.y = y;
   el.style.left = `${x * cellSize}px`;
   el.style.top = `${y * cellSize}px`;
   el.style.width = `${cellSize}px`;
@@ -71,6 +73,7 @@ function updateNode(x, y, props = {}) {
       ...data,
     };
   }
+  nodes.map[x][y] = node;
   return node;
 }
 
@@ -81,8 +84,6 @@ function generateGrid() {
   for (let x = 0; x < gridX; x++) {
     for (let y = 0; y < gridY; y++) {
       let el = createNode(x, y);
-      el.dataset.x = x;
-      el.dataset.y = y;
       let node = new PathNode({ x, y, el });
       node.x = x;
       node.y = y;
@@ -133,15 +134,20 @@ function getDistance(node1, node2) {
 
 grid.addEventListener("click", handleClick);
 function handleClick(e) {
-  if ((node = getParentTarget(e.target, ".cell", "#grid"))) {
-    getSurroundingNodes(node.dataset.x, node.dataset.y);
+  if ((el = getParentTarget(e.target, ".cell", "#grid"))) {
+    let node = nodes.map[el.dataset.x][el.dataset.y];
+    updateNode(node.x, node.y, { className: "close" });
+    getSurroundingNodes(node.x, node.y);
   }
 }
 
 function getParentTarget(node, parentSelector, endSelector) {
   let parentNode = node.parentNode;
-  if (node.matches(parentSelector) || parentNode.matches(parentSelector)) {
+  if (node.matches(parentSelector)) {
     return node;
+  }
+  if (parentNode.matches(parentSelector)) {
+    return parentNode;
   }
   while (
     !parentNode.matches(parentSelector) ||
@@ -157,21 +163,89 @@ HTMLElement.prototype.hasClass = function (className) {
 };
 
 function getSurroundingNodes(x, y) {
+  x = parseInt(x);
+  y = parseInt(y);
+  let parentNode = nodes.map[x][y];
+  console.log(parentNode);
   if (isValidCoords(x, y - 1)) {
-    updateNode(x, y - 1, { className: ".open" });
+    let node = nodes.map[x][y - 1];
+    let gCost = parentNode.gCost + 10;
+    let hCost = getDistance(node, endNode);
+    let fCost = gCost + hCost;
+    updateNode(x, y - 1, {
+      className: "open",
+      html: `<i class="f">${fCost}</i><i class="g">${gCost}</i><i class="h">${hCost}</i>`,
+      data: {
+        fCost,
+        gCost,
+        hCost,
+      },
+    });
+    node.parentNode = parentNode;
+  }
+  if (isValidCoords(x, y + 1)) {
+    let node = nodes.map[x][y + 1];
+    let gCost = parentNode.gCost + 10;
+    let hCost = getDistance(node, endNode);
+    let fCost = gCost + hCost;
+    updateNode(x, y + 1, {
+      className: "open",
+      html: `<i class="f">${fCost}</i><i class="g">${gCost}</i><i class="h">${hCost}</i>`,
+      data: {
+        fCost,
+        gCost,
+        hCost,
+      },
+    });
+    node.parentNode = parentNode;
+  }
+  if (isValidCoords(x - 1, y)) {
+    let node = nodes.map[x - 1][y];
+    let gCost = parentNode.gCost + 10;
+    let hCost = getDistance(node, endNode);
+    let fCost = gCost + hCost;
+    updateNode(x - 1, y, {
+      className: "open",
+      html: `<i class="f">${fCost}</i><i class="g">${gCost}</i><i class="h">${hCost}</i>`,
+      data: {
+        fCost,
+        gCost,
+        hCost,
+      },
+    });
+    node.parentNode = parentNode;
+  }
+  if (isValidCoords(x + 1, y)) {
+    let node = nodes.map[x + 1][y];
+    let gCost = parentNode.gCost + 10;
+    let hCost = getDistance(node, endNode);
+    let fCost = gCost + hCost;
+    updateNode(x + 1, y, {
+      className: "open",
+      html: `<i class="f">${fCost}</i><i class="g">${gCost}</i><i class="h">${hCost}</i>`,
+      data: {
+        fCost,
+        gCost,
+        hCost,
+      },
+    });
+    node.parentNode = parentNode;
   }
 }
 
 function isValidCoords(x, y) {
-  // Inside the grid
-  // Not in the closed Nodes
   if (
+    // Inside the grid
     x > -1 &&
-    x < gridX - 1 &&
+    x < gridX &&
     y > -1 &&
-    y < gridY - 1 &&
-    !closedNodes.map[x][y]
+    y < gridY &&
+    !(closedNodes.map[x] && closedNodes.map[x][y]) &&
+    !(obstacles.map[x] && obstacles.map[x][y]) &&
+    !(startNode.x == x && startNode.y == y) &&
+    !(endNode.x == x && endNode.y == y)
   ) {
-    console.log("valid");
+    return true;
   }
+  return false;
 }
