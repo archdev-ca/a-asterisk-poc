@@ -13,6 +13,10 @@ let obstacles = {
 let endPoints = { x: 8, y: 4 };
 let startPoints = { x: 1, y: 1 };
 let openNodesList = [];
+let closedNodes = {
+  list: [],
+  map: {},
+};
 
 function PathNode(props = {}) {
   let { el, x, y, gCost, hCost, fCost, parentNode } = props;
@@ -77,6 +81,8 @@ function generateGrid() {
   for (let x = 0; x < gridX; x++) {
     for (let y = 0; y < gridY; y++) {
       let el = createNode(x, y);
+      el.dataset.x = x;
+      el.dataset.y = y;
       let node = new PathNode({ x, y, el });
       node.x = x;
       node.y = y;
@@ -127,14 +133,45 @@ function getDistance(node1, node2) {
 
 grid.addEventListener("click", handleClick);
 function handleClick(e) {
-  e.target.traverseToParentClass();
+  if ((node = getParentTarget(e.target, ".cell", "#grid"))) {
+    getSurroundingNodes(node.dataset.x, node.dataset.y);
+  }
 }
 
-HTMLElement.prototype.traverseToParentClass = function (parentClass, endClass) {
-  console.log(this.parentNode.className);
-};
+function getParentTarget(node, parentSelector, endSelector) {
+  let parentNode = node.parentNode;
+  if (node.matches(parentSelector) || parentNode.matches(parentSelector)) {
+    return node;
+  }
+  while (
+    !parentNode.matches(parentSelector) ||
+    parentNode.matches(endSelector)
+  ) {
+    return getParentTarget(parentNode, parentSelector, endSelector);
+  }
+}
 
 HTMLElement.prototype.hasClass = function (className) {
   let classes = this.className.split(" ");
   return classes.indexOf(className) > -1;
 };
+
+function getSurroundingNodes(x, y) {
+  if (isValidCoords(x, y - 1)) {
+    updateNode(x, y - 1, { className: ".open" });
+  }
+}
+
+function isValidCoords(x, y) {
+  // Inside the grid
+  // Not in the closed Nodes
+  if (
+    x > -1 &&
+    x < gridX - 1 &&
+    y > -1 &&
+    y < gridY - 1 &&
+    !closedNodes.map[x][y]
+  ) {
+    console.log("valid");
+  }
+}
