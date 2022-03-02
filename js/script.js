@@ -18,6 +18,37 @@ let closedNodes = {
   map: {},
 };
 
+generateGrid();
+
+grid.addEventListener("click", handleClick);
+
+// Create obstacles
+obstacles.map[7] = {};
+obstacles.map[8] = {};
+obstacles.map[7][3] = updateNode(7, 3, { className: "obstacle" });
+obstacles.map[7][4] = updateNode(7, 4, { className: "obstacle" });
+obstacles.map[8][3] = updateNode(8, 3, { className: "obstacle" });
+
+// Create endpoints
+let startNode = updateNode(1, 1, {
+  x: 1,
+  y: 1,
+  gCost: 0,
+  className: "endpoint",
+  html: '<i class="f">A</i>',
+});
+let endNode = updateNode(8, 4, {
+  x: 8,
+  y: 4,
+  hCost: 0,
+  className: "endpoint",
+  html: '<i class="f">B<i>C<i>D</i></i></i>',
+});
+let endToEnd = getDistance(startNode, endNode);
+startNode.hCost = endToEnd;
+endNode.gCost = endToEnd;
+openNodes.push(startNode);
+
 function PathNode(props = {}) {
   let { el, x, y, gCost = 0, hCost = 0, fCost = 0, parentNode } = props;
   this.x = x;
@@ -113,35 +144,6 @@ function generateGrid() {
     }
   }
 }
-generateGrid();
-
-// Create obstacles
-obstacles.map[7] = {};
-obstacles.map[8] = {};
-obstacles.map[7][3] = updateNode(7, 3, { className: "obstacle" });
-obstacles.map[7][4] = updateNode(7, 4, { className: "obstacle" });
-obstacles.map[8][3] = updateNode(8, 3, { className: "obstacle" });
-
-// Create endpoints
-let startNode = updateNode(1, 1, {
-  x: 1,
-  y: 1,
-  gCost: 0,
-  className: "endpoint",
-  html: '<i class="f">A</i>',
-});
-
-let endNode = updateNode(8, 4, {
-  x: 8,
-  y: 4,
-  hCost: 0,
-  className: "endpoint",
-  html: '<i class="f">B<i>C<i>D</i></i></i>',
-});
-
-let endToEnd = getDistance(startNode, endNode);
-startNode.hCost = endToEnd;
-endNode.gCost = endToEnd;
 
 /**
  * Get the distance between two nodes
@@ -153,10 +155,14 @@ function getDistance(node1, node2) {
   return (Math.abs(node1.x - node2.x) + Math.abs(node1.y - node2.y)) * 10;
 }
 
-grid.addEventListener("click", handleClick);
+/**
+ * Grid click handler
+ * @param {*} e
+ */
 function handleClick(e) {
   if ((el = getParentTarget(e.target, ".cell", "#canvas"))) {
     let node = nodes.map[el.dataset.x][el.dataset.y];
+    closeNode(node.x, node.y);
     updateNode(node.x, node.y, { className: "close" });
     getSurroundingNodes(node.x, node.y);
   }
@@ -291,7 +297,8 @@ function isValidCoords(x, y) {
     !(closedNodes.map[x] && closedNodes.map[x][y]) &&
     !(obstacles.map[x] && obstacles.map[x][y]) &&
     !(startNode.x == x && startNode.y == y) &&
-    !(endNode.x == x && endNode.y == y)
+    !(endNode.x == x && endNode.y == y) &&
+    !(closedNodes.map[x] && closedNodes.map[x][y])
   ) {
     return true;
   }
@@ -301,19 +308,18 @@ function isValidCoords(x, y) {
 /**
  * Find the shortest path
  */
+let counter = 10;
 function solve() {
   // Get surrounding nodes of startNode
   // Sort surrounding nodes by fCost, hCost
-  let surroundingNodes = getSurroundingNodes(startNode.x, startNode.y);
+  let node = openNodes.shift();
+  node.el.className += " close";
+  closeNode(node.x, node.y);
+  let surroundingNodes = getSurroundingNodes(node.x, node.y);
   for (let i = 0; i < surroundingNodes.length; i++) {
     queueNode(openNodes, surroundingNodes[i]);
   }
-  setTimeout(function () {
-    let surroundingNodes = getSurroundingNodes(openNodes[0].x, openNodes[0].y);
-    for (let i = 0; i < surroundingNodes.length; i++) {
-      queueNode(openNodes, surroundingNodes[i]);
-    }
-  }, 1000);
+  setTimeout(function () {}, 1000);
 }
 
 /**
@@ -323,6 +329,9 @@ function solve() {
  * @returns
  */
 function queueNode(queue, node) {
+  if (isClosedNode(node.x, node.y)) {
+    return false;
+  }
   for (let i = 0; i < queue.length; i++) {
     let curNode = queue[i];
 
@@ -336,4 +345,25 @@ function queueNode(queue, node) {
     }
   }
   queue.push(node);
+}
+
+/**
+ * Add this coordinate to closedNodes
+ * @param {*} x
+ * @param {*} y
+ */
+function closeNode(x, y) {
+  if (!closedNodes.map[x]) {
+    closedNodes.map[x] = {};
+  }
+  closedNodes.map[x][y] = true;
+}
+
+/**
+ * Check if this coordinate is a closed node
+ * @param {*} x
+ * @param {*} y
+ */
+function isClosedNode(x, y) {
+  return closedNodes.map[x] && closedNodes.map[x][y];
 }
