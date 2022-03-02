@@ -12,7 +12,7 @@ let obstacles = {
 };
 let endPoints = { x: 8, y: 4 };
 let startPoints = { x: 1, y: 1 };
-let openNodesList = [];
+let openNodes = [];
 let closedNodes = {
   list: [],
   map: {},
@@ -134,105 +134,132 @@ function getDistance(node1, node2) {
 
 grid.addEventListener("click", handleClick);
 function handleClick(e) {
-  if ((el = getParentTarget(e.target, ".cell", "#grid"))) {
+  if ((el = getParentTarget(e.target, ".cell", "#canvas"))) {
     let node = nodes.map[el.dataset.x][el.dataset.y];
     updateNode(node.x, node.y, { className: "close" });
     getSurroundingNodes(node.x, node.y);
   }
 }
 
+/**
+ * Return the parent node that matches the selector
+ * @param {*} node
+ * @param {*} parentSelector
+ * @param {*} endSelector
+ * @returns
+ */
 function getParentTarget(node, parentSelector, endSelector) {
   let parentNode = node.parentNode;
+  if (node.matches(endSelector) || parentNode.matches(endSelector)) {
+    return false;
+  }
   if (node.matches(parentSelector)) {
     return node;
   }
-  if (parentNode.matches(parentSelector)) {
+  if (parentNode && parentNode.matches(parentSelector)) {
     return parentNode;
   }
+  // Continue getting parent node until it reaches endSelector
   while (
     !parentNode.matches(parentSelector) ||
-    parentNode.matches(endSelector)
+    !parentNode.matches(endSelector)
   ) {
     return getParentTarget(parentNode, parentSelector, endSelector);
   }
 }
 
-HTMLElement.prototype.hasClass = function (className) {
-  let classes = this.className.split(" ");
-  return classes.indexOf(className) > -1;
-};
-
+/**
+ * Gets the surrounding nodes of the node in this coordinate
+ * @param {*} x
+ * @param {*} y
+ * @returns
+ */
 function getSurroundingNodes(x, y) {
   x = parseInt(x);
   y = parseInt(y);
   let parentNode = nodes.map[x][y];
-  console.log(parentNode);
+  let surroundingNodes = [];
   if (isValidCoords(x, y - 1)) {
     let node = nodes.map[x][y - 1];
     let gCost = parentNode.gCost + 10;
     let hCost = getDistance(node, endNode);
     let fCost = gCost + hCost;
-    updateNode(x, y - 1, {
-      className: "open",
-      html: `<i class="f">${fCost}</i><i class="g">${gCost}</i><i class="h">${hCost}</i>`,
-      data: {
-        fCost,
-        gCost,
-        hCost,
-      },
-    });
     node.parentNode = parentNode;
+    surroundingNodes.push(
+      updateNode(x, y - 1, {
+        className: "open",
+        html: `<i class="f">${fCost}</i><i class="g">${gCost}</i><i class="h">${hCost}</i>`,
+        data: {
+          fCost,
+          gCost,
+          hCost,
+        },
+      })
+    );
   }
   if (isValidCoords(x, y + 1)) {
     let node = nodes.map[x][y + 1];
     let gCost = parentNode.gCost + 10;
     let hCost = getDistance(node, endNode);
     let fCost = gCost + hCost;
-    updateNode(x, y + 1, {
-      className: "open",
-      html: `<i class="f">${fCost}</i><i class="g">${gCost}</i><i class="h">${hCost}</i>`,
-      data: {
-        fCost,
-        gCost,
-        hCost,
-      },
-    });
     node.parentNode = parentNode;
+    surroundingNodes.push(
+      updateNode(x, y + 1, {
+        className: "open",
+        html: `<i class="f">${fCost}</i><i class="g">${gCost}</i><i class="h">${hCost}</i>`,
+        data: {
+          fCost,
+          gCost,
+          hCost,
+        },
+      })
+    );
   }
   if (isValidCoords(x - 1, y)) {
     let node = nodes.map[x - 1][y];
     let gCost = parentNode.gCost + 10;
     let hCost = getDistance(node, endNode);
     let fCost = gCost + hCost;
-    updateNode(x - 1, y, {
-      className: "open",
-      html: `<i class="f">${fCost}</i><i class="g">${gCost}</i><i class="h">${hCost}</i>`,
-      data: {
-        fCost,
-        gCost,
-        hCost,
-      },
-    });
     node.parentNode = parentNode;
+    surroundingNodes.push(
+      updateNode(x - 1, y, {
+        className: "open",
+        html: `<i class="f">${fCost}</i><i class="g">${gCost}</i><i class="h">${hCost}</i>`,
+        data: {
+          fCost,
+          gCost,
+          hCost,
+        },
+      })
+    );
   }
   if (isValidCoords(x + 1, y)) {
     let node = nodes.map[x + 1][y];
     let gCost = parentNode.gCost + 10;
     let hCost = getDistance(node, endNode);
     let fCost = gCost + hCost;
-    updateNode(x + 1, y, {
-      className: "open",
-      html: `<i class="f">${fCost}</i><i class="g">${gCost}</i><i class="h">${hCost}</i>`,
-      data: {
-        fCost,
-        gCost,
-        hCost,
-      },
-    });
     node.parentNode = parentNode;
+    surroundingNodes.push(
+      updateNode(x + 1, y, {
+        className: "open",
+        html: `<i class="f">${fCost}</i><i class="g">${gCost}</i><i class="h">${hCost}</i>`,
+        data: {
+          fCost,
+          gCost,
+          hCost,
+        },
+      })
+    );
   }
+  return surroundingNodes;
 }
 
+/**
+ * Check if coordinate is valid
+ * @param {*} x
+ * @param {*} y
+ * @returns
+ */
 function isValidCoords(x, y) {
   if (
     // Inside the grid
@@ -248,4 +275,41 @@ function isValidCoords(x, y) {
     return true;
   }
   return false;
+}
+
+function solve() {
+  // Get surrounding nodes of startNode
+  // Sort surrounding nodes by fCost, hCost
+  let surroundingNodes = getSurroundingNodes(startNode.x, startNode.y);
+  for (let i = 0; i < surroundingNodes.length; i++) {
+    queueNode(openNodes, surroundingNodes[i]);
+  }
+  setTimeout(function () {
+    let surroundingNodes = getSurroundingNodes(openNodes[0].x, openNodes[0].y);
+    for (let i = 0; i < surroundingNodes.length; i++) {
+      queueNode(openNodes, surroundingNodes[i]);
+    }
+  }, 1000);
+}
+
+/**
+ * Queue node lowest fCost and lowest hCost first
+ * @param {*} queue
+ * @param {*} node
+ * @returns
+ */
+function queueNode(queue, node) {
+  for (let i = 0; i < queue.length; i++) {
+    let curNode = queue[i];
+
+    // Lower fCost or Lower gCost
+    if (
+      node.fCost < curNode.fCost ||
+      (node.fCost == curNode.fCost && node.hCost < curNode.hCost)
+    ) {
+      queue.splice(i, 0, node);
+      return;
+    }
+  }
+  queue.push(node);
 }
