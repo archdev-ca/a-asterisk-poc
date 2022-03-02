@@ -29,6 +29,13 @@ function PathNode(props = {}) {
   this.parentNode = parentNode;
 }
 
+/**
+ * Create a node in the supplied coordinates
+ * @param {*} x
+ * @param {*} y
+ * @param {*} props
+ * @returns
+ */
 function createNode(x, y, props = {}) {
   let { className, html } = props;
   let el = document.createElement("div");
@@ -58,6 +65,13 @@ function mc(x, y) {
   return `${x}:${y}`;
 }
 
+/**
+ * Update the node in the supplied coordinates
+ * @param {*} x
+ * @param {*} y
+ * @param {*} props
+ * @returns
+ */
 function updateNode(x, y, props = {}) {
   let { className, data, html } = props;
   let node = nodes.map[x][y];
@@ -77,7 +91,9 @@ function updateNode(x, y, props = {}) {
   return node;
 }
 
-// Generate the grid
+/**
+ * Generate the grid nodes
+ */
 function generateGrid() {
   grid.style.width = `${gridX * cellSize}px`;
   grid.style.height = `${gridY * cellSize}px`;
@@ -127,7 +143,12 @@ let endToEnd = getDistance(startNode, endNode);
 startNode.hCost = endToEnd;
 endNode.gCost = endToEnd;
 
-// Get distance between nodes
+/**
+ * Get the distance between two nodes
+ * @param {*} node1
+ * @param {*} node2
+ * @returns
+ */
 function getDistance(node1, node2) {
   return (Math.abs(node1.x - node2.x) + Math.abs(node1.y - node2.y)) * 10;
 }
@@ -277,6 +298,9 @@ function isValidCoords(x, y) {
   return false;
 }
 
+/**
+ * Find the shortest path
+ */
 function solve() {
   // Get surrounding nodes of startNode
   // Sort surrounding nodes by fCost, hCost
