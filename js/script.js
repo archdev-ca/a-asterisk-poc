@@ -33,14 +33,14 @@ obstacles.map[7][4] = updateNode(7, 4, { className: "obstacle" });
 obstacles.map[8][3] = updateNode(8, 3, { className: "obstacle" });
 
 // Create endpoints
-let startNode = updateNode(1, 1, {
+let startNode = updateNode(startPoints.x, startPoints.y, {
   x: 1,
   y: 1,
   gCost: 0,
   className: "endpoint",
   html: '<i class="f">A</i>',
 });
-let endNode = updateNode(8, 4, {
+let endNode = updateNode(endPoints.x, endPoints.y, {
   x: 8,
   y: 4,
   hCost: 0,
@@ -353,6 +353,11 @@ function solve() {
     queueNode(openNodes.list, surroundingNodes[i]);
   }
   counter += 1;
+  if (counter < 100) {
+    setTimeout(function () {
+      solve();
+    }, 100);
+  }
 }
 
 /**
@@ -429,7 +434,6 @@ function isOpenNode(x, y) {
  * @returns
  */
 function tracebackNode(node) {
-  console.log(node);
   node.el.className += " route";
   if (node.x == startNode.x && node.y == startNode.y) {
     return;
