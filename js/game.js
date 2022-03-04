@@ -1,6 +1,6 @@
 var engine = new Engine(document.getElementById("game-canvas"));
 
-engine.createGrid();
+engine.generateGrid();
 engine.setStartNode(2, 2);
 engine.setEndNode(10, 10);
 engine.addObstacles([

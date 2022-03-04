@@ -37,7 +37,7 @@ function Engine(canvas, config = {}) {
     };
   }
 
-  this.createGrid = function () {
+  this.generateGrid = function () {
     canvas.width = `${cfg.cellW * cfg.gridW}`;
     canvas.height = `${cfg.cellH * cfg.gridH}`;
     c.fillStyle = "#fff";
