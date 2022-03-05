@@ -5,12 +5,12 @@ function Engine(canvas, config = {}) {
     gridW: 15, // Number of cells
     gridH: 15, // Number of cells
   };
+  const engine = this;
   let cfg = {
     ...defaultConfig,
     ...config,
   };
   let c = canvas.getContext("2d");
-
   let nodes = {
     map: {},
     list: [],
@@ -30,10 +30,11 @@ function Engine(canvas, config = {}) {
     this.gCost = props.gCost;
     this.hCost = props.hCost;
     this.update = function () {
-      c.fillStyle = `#ccc`;
-      c.strokeStyle = "#000";
-      c.lineWidth = 1;
-      c.strokeRect(x * cfg.cellW, y * cfg.cellH, cfg.cellW, cfg.cellH);
+      engine.addRect(x * cfg.cellW, y * cfg.cellH, cfg.cellW, cfg.cellH, {
+        lineWidth: 1,
+        strokeStyle: "#ccc",
+        color: "#fff",
+      });
     };
   }
 
@@ -45,7 +46,7 @@ function Engine(canvas, config = {}) {
     // Create cells
     for (let x = 0; x < cfg.gridW; x++) {
       for (let y = 0; y < cfg.gridW; y++) {
-        let cell = new Cell(x, y);
+        let cell = new Cell(this, x, y);
         if (!nodes.map[x]) {
           nodes.map[x] = {};
         }
@@ -60,6 +61,7 @@ function Engine(canvas, config = {}) {
     let node = nodes.map[x][y];
     this.addRect(x * cfg.cellW, y * cfg.cellH, cfg.cellW, cfg.cellH, {
       color: "#00b9ff",
+      strokeStyle: "#fff",
       lineWidth: 2,
     });
     this.addText(
@@ -69,10 +71,12 @@ function Engine(canvas, config = {}) {
       { size: "20px", align: "center", baseline: "middle", color: "#000" }
     );
   };
+
   this.setEndNode = function (x, y) {
     let node = nodes.map[x][y];
     this.addRect(x * cfg.cellW, y * cfg.cellH, cfg.cellW, cfg.cellH, {
       color: "#00b9ff",
+      strokeStyle: "#fff",
       lineWidth: 2,
     });
     this.addText(
@@ -92,6 +96,8 @@ function Engine(canvas, config = {}) {
         cfg.cellW,
         cfg.cellH,
         {
+          strokeStyle: "#fff",
+          lineWidth: 2,
           color: "#000",
         }
       );
