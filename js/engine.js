@@ -152,3 +152,18 @@ function Engine(canvas, config = {}) {
     }
   };
 }
+
+Object.prototype.addProp = function (keys, value) {
+  let curobj = this;
+  for (let i = 0; i < keys.length; i++) {
+    key = keys[i];
+    if (!curobj[key]) {
+      curobj[key] = i === keys.length - 1 ? value : {};
+    } else {
+      if (i === keys.length - 1) {
+        curobj[key] = value;
+      }
+    }
+    curobj = curobj[key];
+  }
+};
