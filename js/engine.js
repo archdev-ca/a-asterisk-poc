@@ -15,6 +15,10 @@ function Engine(canvas, config = {}) {
     map: {},
     list: [],
   };
+  let cells = {
+    list: [],
+    map: {},
+  };
 
   function Cell(x, y, props) {
     props = {
@@ -61,19 +65,18 @@ function Engine(canvas, config = {}) {
     // Create cells
     for (let x = 0; x < cfg.gridW; x++) {
       for (let y = 0; y < cfg.gridW; y++) {
-        let cell = new Cell(this, x, y);
-        if (!nodes.map[x]) {
-          nodes.map[x] = {};
+        let cell = new Cell(x, y);
+        if (!cells.map[x]) {
+          cells.map[x] = {};
         }
-        nodes.map[x][y] = cell;
-        nodes.list.push(cell);
+        cells.map[x][y] = cell;
+        cells.list.push(cell);
         cell.update();
       }
     }
   };
 
   this.setStartNode = function (x, y) {
-    let node = nodes.map[x][y];
     this.addRect(x * cfg.cellW, y * cfg.cellH, cfg.cellW, cfg.cellH, {
       color: "#00b9ff",
       strokeStyle: "#fff",
@@ -88,7 +91,6 @@ function Engine(canvas, config = {}) {
   };
 
   this.setEndNode = function (x, y) {
-    let node = nodes.map[x][y];
     this.addRect(x * cfg.cellW, y * cfg.cellH, cfg.cellW, cfg.cellH, {
       color: "#00b9ff",
       strokeStyle: "#fff",
