@@ -18,6 +18,21 @@ function Engine(canvas, config = {}) {
 
   function Cell(x, y, props) {
     props = {
+      ...props,
+    };
+    this.x = x;
+    this.y = y;
+    this.update = function () {
+      engine.addRect(x * cfg.cellW, y * cfg.cellH, cfg.cellW, cfg.cellH, {
+        lineWidth: 1,
+        strokeStyle: "#ccc",
+        color: "#fff",
+      });
+    };
+  }
+
+  function Node(x, y, props) {
+    props = {
       gCost: 0,
       hCost: 0,
       fCost: 0,
