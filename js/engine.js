@@ -180,13 +180,13 @@ function Engine(canvas, config = {}) {
     if (
       // Inside the grid
       x > -1 &&
-      x < this.cfg.gridW &&
+      x < cfg.gridW &&
       y > -1 &&
-      y < this.cfg.gridH &&
+      y < cfg.gridH &&
       // Not closed Nodes
       !this.isClosedNode(x, y) &&
       // Not an obstacle node
-      !(this.obstacleNodes.map[x] && this.obstacleNodes.map[x][y]) &&
+      !(obstacleNodes.map[x] && obstacleNodes.map[x][y]) &&
       // Not start node
       !(startNode.x == x && startNode.y == y)
     ) {
