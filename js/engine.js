@@ -19,6 +19,17 @@ function Engine(canvas, config = {}) {
     list: [],
     map: {},
   };
+  let openNodes = {
+    list: [],
+    map: {},
+  };
+  let closedNodes = {
+    map: {},
+  };
+  let obstacleNodes = {
+    map: {},
+  };
+  let startNode = null;
 
   function Cell(x, y, props) {
     props = {
@@ -40,6 +51,7 @@ function Engine(canvas, config = {}) {
       gCost: 0,
       hCost: 0,
       fCost: 0,
+      prevNode: null,
       isStartNode: false,
       isEndNode: false,
       ...props,
@@ -48,13 +60,6 @@ function Engine(canvas, config = {}) {
     this.y = y;
     this.gCost = props.gCost;
     this.hCost = props.hCost;
-    this.update = function () {
-      engine.addRect(x * cfg.cellW, y * cfg.cellH, cfg.cellW, cfg.cellH, {
-        lineWidth: 1,
-        strokeStyle: "#ccc",
-        color: "#fff",
-      });
-    };
   }
 
   this.generateGrid = function () {
@@ -88,6 +93,7 @@ function Engine(canvas, config = {}) {
       y * cfg.cellH + cfg.cellH / 2,
       { size: "20px", align: "center", baseline: "middle", color: "#000" }
     );
+    startNode = new Node(x, y);
   };
 
   this.setEndNode = function (x, y) {
@@ -152,6 +158,41 @@ function Engine(canvas, config = {}) {
       c.strokeStyle = props.strokeStyle;
       c.strokeRect(x, y, width, height);
     }
+  };
+
+  this.findNearestPath = function () {
+    let startingNode = new Node(2, 2);
+    let node = openNodes.list.shift();
+  };
+
+  this.queueNode = function (x, y) {
+    openNodes.map.addProp([x, y], true);
+    openNodes.list.push(nodes.map[(x, y)]);
+  };
+
+  this.getDistance = function (node1, node2) {};
+
+  this.isNodeClosed = function (x, y) {
+    return !!closedNodes.map[x] && closedNodes.map[x][y];
+  };
+
+  this.isValidCoords = function (x, y) {
+    if (
+      // Inside the grid
+      x > -1 &&
+      x < this.cfg.gridW &&
+      y > -1 &&
+      y < this.cfg.gridH &&
+      // Not closed Nodes
+      !this.isClosedNode(x, y) &&
+      // Not an obstacle node
+      !(this.obstacleNodes.map[x] && this.obstacleNodes.map[x][y]) &&
+      // Not start node
+      !(startNode.x == x && startNode.y == y)
+    ) {
+      return true;
+    }
+    return false;
   };
 }
 

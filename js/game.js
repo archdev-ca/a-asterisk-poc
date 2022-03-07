@@ -8,3 +8,7 @@ engine.addObstacles([
   [9, 9],
   [10, 9],
 ]);
+
+function solve() {
+  engine.findNearestPath();
+}
