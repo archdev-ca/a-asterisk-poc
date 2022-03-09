@@ -184,6 +184,7 @@ function Engine(canvas, config = {}) {
   };
 
   this.isValidCoords = function (x, y) {
+  let isValidCoords = function (x, y) {
     if (
       // Inside the grid
       x > -1 &&
@@ -191,9 +192,9 @@ function Engine(canvas, config = {}) {
       y > -1 &&
       y < cfg.gridH &&
       // Not closed Nodes
-      !this.isClosedNode(x, y) &&
+      !isNodeClosed(x, y) &&
       // Not an obstacle node
-      !(obstacleNodes.map[x] && obstacleNodes.map[x][y]) &&
+      !isObstacle(x, y) &&
       // Not start node
       !(startNode.x == x && startNode.y == y)
     ) {
