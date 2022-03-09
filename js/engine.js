@@ -177,13 +177,22 @@ function Engine(canvas, config = {}) {
     openNodes.list.push(node);
   };
 
-  this.getDistance = function (node1, node2) {};
+  let getDistance = function (node1, node2) {
+    return (Math.abs(node1.x - node2.x) + Math.abs(node1.y - node2.y)) * 10;
+  };
 
-  this.isNodeClosed = function (x, y) {
+  let isNodeClosed = function (x, y) {
     return !!closedNodes.map[x] && closedNodes.map[x][y];
   };
 
-  this.isValidCoords = function (x, y) {
+  let isNodeOpen = function (x, y) {
+    return !!openNodes.map[x] && openNodes.map[x][y];
+  };
+
+  let isObstacle = function (x, y) {
+    return !!obstacleNodes.map[x] && obstacleNodes.map[x][y];
+  };
+
   let isValidCoords = function (x, y) {
     if (
       // Inside the grid
