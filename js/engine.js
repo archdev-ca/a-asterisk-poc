@@ -269,13 +269,6 @@ function Engine(canvas, config = {}) {
     }
     return surroundingNodes;
   };
-
-  function getNode(x, y) {
-    if (!nodes.map[x] || !nodes.map[x][y]) {
-      return new Node(x, y);
-    }
-    return nodes.map[x][y];
-  }
 }
 
 Object.prototype.addProp = function (keys, value) {
