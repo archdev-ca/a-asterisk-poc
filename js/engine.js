@@ -61,7 +61,18 @@ function Engine(canvas, config = {}) {
     this.y = y;
     this.gCost = props.gCost;
     this.hCost = props.hCost;
-    this.close = function () {};
+    this.close = function () {
+      if (!closedNodes.map[this.x]) {
+        closedNodes.map[this.x] = {};
+      }
+      closedNodes.map[this.x][this.y] = true;
+    };
+    this.open = function () {
+      if (!openNodes.map[this.x]) {
+        openNodes.map[this.x] = {};
+      }
+      openNodes.map[this.x][this.y] = true;
+    };
   }
 
   this.generateGrid = function () {
