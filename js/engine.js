@@ -205,102 +205,66 @@ function Engine(canvas, config = {}) {
   this.getSurroundingNodes = function (x, y) {
     // x = parseInt(x);
     // y = parseInt(y);
-    let parentNode = nodes.map[x][y];
+    let parentNode = openNodes.map[x][y];
     let surroundingNodes = [];
     if (isValidCoords(x, y - 1)) {
-      let node = nodes.map[x][y - 1];
-      let gCost = parentNode.gCost + 10;
-      let hCost = getDistance(node, endNode);
-      let fCost = gCost + hCost;
+      let node = new Node(x, y - 1);
+      node.gCost = parentNode.gCost + 10;
+      node.hCost = getDistance(node, endNode);
+      node.fCost = node.gCost + node.hCost;
       node.parentNode = parentNode;
       if (
-        !isOpenNode(x, y - 1) ||
-        fCost < node.fCost ||
-        (fCost == node.fCost && hCost < node.hCost)
+        !isNodeOpen(x, y - 1) ||
+        node.fCost < node.fCost ||
+        (node.fCost == node.fCost && node.hCost < node.hCost)
       ) {
-        let updatedNode = updateNode(x, y - 1, {
-          className: "open",
-          html: `<i class="f">${fCost}</i><i class="g">${gCost}</i><i class="h">${hCost}</i>`,
-          data: {
-            fCost,
-            gCost,
-            hCost,
-          },
-        });
-        surroundingNodes.push(updatedNode);
-        openNode(updatedNode.x, updatedNode.y);
+        surroundingNodes.push(node);
+        node.open();
       }
     }
     if (isValidCoords(x, y + 1)) {
-      let node = nodes.map[x][y + 1];
-      let gCost = parentNode.gCost + 10;
-      let hCost = getDistance(node, endNode);
-      let fCost = gCost + hCost;
+      let node = new Node(x, y + 1);
+      node.gCost = parentNode.gCost + 10;
+      node.hCost = getDistance(node, endNode);
+      node.fCost = node.gCost + node.hCost;
       node.parentNode = parentNode;
       if (
-        !isOpenNode(x, y + 1) ||
-        fCost < node.fCost ||
-        (fCost == node.fCost && hCost < node.hCost)
+        !isNodeOpen(x, y + 1) ||
+        node.fCost < node.fCost ||
+        (node.fCost == node.fCost && node.hCost < node.hCost)
       ) {
-        let updatedNode = updateNode(x, y + 1, {
-          className: "open",
-          html: `<i class="f">${fCost}</i><i class="g">${gCost}</i><i class="h">${hCost}</i>`,
-          data: {
-            fCost,
-            gCost,
-            hCost,
-          },
-        });
-        surroundingNodes.push(updatedNode);
-        openNode(updatedNode.x, updatedNode.y);
+        surroundingNodes.push(node);
+        node.open();
       }
     }
     if (isValidCoords(x - 1, y)) {
-      let node = nodes.map[x - 1][y];
-      let gCost = parentNode.gCost + 10;
-      let hCost = getDistance(node, endNode);
-      let fCost = gCost + hCost;
+      let node = new Node(x - 1, y);
+      node.gCost = parentNode.gCost + 10;
+      node.hCost = getDistance(node, endNode);
+      node.fCost = node.gCost + node.hCost;
       node.parentNode = parentNode;
       if (
-        !isOpenNode(x - 1, y) ||
-        fCost < node.fCost ||
-        (fCost == node.fCost && hCost < node.hCost)
+        !isNodeOpen(x - 1, y) ||
+        node.fCost < node.fCost ||
+        (node.fCost == node.fCost && node.hCost < node.hCost)
       ) {
-        let updatedNode = updateNode(x - 1, y, {
-          className: "open",
-          html: `<i class="f">${fCost}</i><i class="g">${gCost}</i><i class="h">${hCost}</i>`,
-          data: {
-            fCost,
-            gCost,
-            hCost,
-          },
-        });
-        surroundingNodes.push(updatedNode);
-        openNode(updatedNode.x, updatedNode.y);
+        surroundingNodes.push(node);
+        node.open();
       }
     }
     if (isValidCoords(x + 1, y)) {
-      let node = nodes.map[x + 1][y];
-      let gCost = parentNode.gCost + 10;
-      let hCost = getDistance(node, endNode);
-      let fCost = gCost + hCost;
+      let node = new Node(x + 1, y);
+      node.gCost = parentNode.gCost + 10;
+      node.hCost = getDistance(node, endNode);
+      node.fCost = node.gCost + node.hCost;
       node.parentNode = parentNode;
       if (
-        !isOpenNode(x + 1, y) ||
-        fCost < node.fCost ||
-        (fCost == node.fCost && hCost < node.hCost)
+        !isNodeOpen(x + 1, y) ||
+        node.fCost < node.fCost ||
+        (node.fCost == node.fCost && node.hCost < node.hCost)
       ) {
-        let updatedNode = updateNode(x + 1, y, {
-          className: "open",
-          html: `<i class="f">${fCost}</i><i class="g">${gCost}</i><i class="h">${hCost}</i>`,
-          data: {
-            fCost,
-            gCost,
-            hCost,
-          },
-        });
-        surroundingNodes.push(updatedNode);
-        openNode(updatedNode.x, updatedNode.y);
+        surroundingNodes.push(node);
+        node.open();
       }
     }
     return surroundingNodes;
