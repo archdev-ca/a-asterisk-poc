@@ -114,7 +114,6 @@ function Engine(canvas, config = {}) {
       { size: "20px", align: "center", baseline: "middle", color: "#000" }
     );
     endNode = new Node(x, y);
-    queueNode(endNode);
   };
 
   this.addObstacles = function (coords) {
