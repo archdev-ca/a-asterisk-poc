@@ -206,6 +206,12 @@ function Engine(canvas, config = {}) {
 
   this.findNearestPath = function () {
     let node = openNodes.list.shift();
+
+    if (node.x == endNode.x && node.y == endNode.y) {
+      tracebackNode(node);
+      return;
+    }
+
     let surroundingNodes = getSurroundingNodes(node.x, node.y);
     for (let i = 0; i < surroundingNodes.length; i++) {
       queueNode(surroundingNodes[i]);
