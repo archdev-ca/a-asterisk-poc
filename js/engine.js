@@ -64,6 +64,44 @@ function Engine(canvas, config = {}) {
       }
       closedNodes.map[this.x][this.y] = true;
     };
+    this.open = function () {
+      if (debug) {
+        engine.addRect(
+          this.x * cfg.cellW,
+          this.y * cfg.cellH,
+          cfg.cellW,
+          cfg.cellH,
+          {
+            color: "#00c93c",
+            strokeStyle: "#fff",
+            lineWidth: 2,
+          }
+        );
+        engine.addText(
+          this.fCost,
+          this.x * cfg.cellW + cfg.cellW / 2,
+          this.y * cfg.cellH + cfg.cellH / 2,
+          { size: "14px", align: "center", baseline: "top", color: "#000" }
+        );
+        engine.addText(
+          this.gCost,
+          this.x * cfg.cellW + 5,
+          this.y * cfg.cellH + 15,
+          {
+            size: "10px",
+            align: "left",
+            baseline: "bottom",
+            color: "#000",
+          }
+        );
+        engine.addText(
+          this.hCost,
+          this.x * cfg.cellW + cfg.cellW - 5,
+          this.y * cfg.cellH + 15,
+          { size: "10px", align: "right", baseline: "bottom", color: "#000" }
+        );
+      }
+    };
   }
 
   this.generateGrid = function () {
@@ -171,6 +209,9 @@ function Engine(canvas, config = {}) {
     let surroundingNodes = getSurroundingNodes(node.x, node.y);
     for (let i = 0; i < surroundingNodes.length; i++) {
       queueNode(surroundingNodes[i]);
+      if (debug) {
+        surroundingNodes[i].open();
+      }
     }
   };
 
