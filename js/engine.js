@@ -186,11 +186,12 @@ function Engine(canvas, config = {}) {
         (node.fCost == curNode.fCost && node.hCost < curNode.hCost)
       ) {
         openNodes.list.splice(i, 0, node);
-        node.close();
+        openNodes.map.addProp([node.x, node.y], node);
         return;
       }
     }
     openNodes.list.push(node);
+    openNodes.map.addProp([node.x, node.y], node);
   };
 
   let getDistance = function (node1, node2) {
