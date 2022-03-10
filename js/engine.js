@@ -172,6 +172,7 @@ function Engine(canvas, config = {}) {
       { size: "20px", align: "center", baseline: "middle", color: "#000" }
     );
     startNode = new Node(x, y);
+    startNode.isStartNode = true;
     queueNode(startNode);
   };
 
