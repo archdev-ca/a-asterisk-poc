@@ -204,6 +204,7 @@ function Engine(canvas, config = {}) {
           color: "#000",
         }
       );
+      obstacleNodes.map.addProp([coord[0], coord[1]], true);
     }
   };
 
