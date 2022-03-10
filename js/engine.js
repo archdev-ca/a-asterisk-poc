@@ -204,11 +204,12 @@ function Engine(canvas, config = {}) {
     }
   };
 
+  let breakpoint = 100;
+  let iterCount = 0;
   this.findNearestPath = function () {
     let node = openNodes.list.shift();
 
     if (node.x == endNode.x && node.y == endNode.y) {
-      tracebackNode(node);
       return;
     }
 
@@ -218,6 +219,13 @@ function Engine(canvas, config = {}) {
       if (debug) {
         surroundingNodes[i].open();
       }
+    }
+
+    iterCount++;
+    if (iterCount < breakpoint) {
+      setTimeout(() => {
+        this.findNearestPath();
+      }, 200);
     }
   };
 
