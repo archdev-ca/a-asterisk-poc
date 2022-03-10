@@ -6,15 +6,12 @@ function Engine(canvas, config = {}) {
     gridH: 15, // Number of cells
   };
   const engine = this;
+  const debug = true;
   let cfg = {
     ...defaultConfig,
     ...config,
   };
   let c = canvas.getContext("2d");
-  let nodes = {
-    map: {},
-    list: [],
-  };
   let cells = {
     list: [],
     map: {},
@@ -67,12 +64,6 @@ function Engine(canvas, config = {}) {
       }
       closedNodes.map[this.x][this.y] = true;
     };
-    this.open = function () {
-      if (!openNodes.map[this.x]) {
-        openNodes.map[this.x] = {};
-      }
-      openNodes.map[this.x][this.y] = true;
-    };
   }
 
   this.generateGrid = function () {
@@ -107,7 +98,7 @@ function Engine(canvas, config = {}) {
       { size: "20px", align: "center", baseline: "middle", color: "#000" }
     );
     startNode = new Node(x, y);
-    this.queueNode(startNode);
+    queueNode(startNode);
   };
 
   this.setEndNode = function (x, y) {
@@ -123,7 +114,7 @@ function Engine(canvas, config = {}) {
       { size: "20px", align: "center", baseline: "middle", color: "#000" }
     );
     endNode = new Node(x, y);
-    this.queueNode(endNode);
+    queueNode(endNode);
   };
 
   this.addObstacles = function (coords) {
@@ -179,10 +170,10 @@ function Engine(canvas, config = {}) {
   this.findNearestPath = function () {
     let node = openNodes.list.shift();
     let surroundingNodes = this.getSurroundingNodes(node.x, node.y);
-    this.queueNode(node);
+    queueNode(node);
   };
 
-  this.queueNode = function (node) {
+  let queueNode = function (node) {
     if (isNodeClosed(node.x, node.y)) {
       return false;
     }
@@ -200,7 +191,6 @@ function Engine(canvas, config = {}) {
       }
     }
     openNodes.list.push(node);
-    node.open();
   };
 
   let getDistance = function (node1, node2) {
@@ -255,7 +245,6 @@ function Engine(canvas, config = {}) {
         (node.fCost == node.fCost && node.hCost < node.hCost)
       ) {
         surroundingNodes.push(node);
-        node.open();
       }
     }
     if (isValidCoords(x, y + 1)) {
@@ -270,7 +259,6 @@ function Engine(canvas, config = {}) {
         (node.fCost == node.fCost && node.hCost < node.hCost)
       ) {
         surroundingNodes.push(node);
-        node.open();
       }
     }
     if (isValidCoords(x - 1, y)) {
@@ -285,7 +273,6 @@ function Engine(canvas, config = {}) {
         (node.fCost == node.fCost && node.hCost < node.hCost)
       ) {
         surroundingNodes.push(node);
-        node.open();
       }
     }
     if (isValidCoords(x + 1, y)) {
@@ -300,7 +287,6 @@ function Engine(canvas, config = {}) {
         (node.fCost == node.fCost && node.hCost < node.hCost)
       ) {
         surroundingNodes.push(node);
-        node.open();
       }
     }
     return surroundingNodes;
