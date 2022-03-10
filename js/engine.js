@@ -177,15 +177,30 @@ function Engine(canvas, config = {}) {
   };
 
   this.findNearestPath = function () {
-    console.log("Finding nearest path");
     let node = openNodes.list.shift();
     let surroundingNodes = this.getSurroundingNodes(node.x, node.y);
-    this.queueNode(node.x, node.y);
+    this.queueNode(node);
   };
 
   this.queueNode = function (node) {
-    openNodes.map.addProp([node.x, node.y], node);
+    if (isNodeClosed(node.x, node.y)) {
+      return false;
+    }
+    for (let i = 0; i < openNodes.list.length; i++) {
+      let curNode = openNodes.list[i];
+
+      // Lower fCost or Lower gCost
+      if (
+        node.fCost < curNode.fCost ||
+        (node.fCost == curNode.fCost && node.hCost < curNode.hCost)
+      ) {
+        openNodes.list.splice(i, 0, node);
+        node.close();
+        return;
+      }
+    }
     openNodes.list.push(node);
+    node.open();
   };
 
   let getDistance = function (node1, node2) {
