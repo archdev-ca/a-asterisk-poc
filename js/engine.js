@@ -229,7 +229,7 @@ function Engine(canvas, config = {}) {
     return false;
   };
 
-  this.getSurroundingNodes = function (x, y) {
+  let getSurroundingNodes = function (x, y) {
     // x = parseInt(x);
     // y = parseInt(y);
     let parentNode = openNodes.map[x][y];
