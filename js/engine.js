@@ -260,7 +260,7 @@ function Engine(canvas, config = {}) {
     if (iterCount < breakpoint) {
       setTimeout(() => {
         this.findNearestPath();
-      }, 200);
+      }, 500);
     }
   };
 
