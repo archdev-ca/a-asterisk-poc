@@ -63,9 +63,45 @@ function Engine(canvas, config = {}) {
         closedNodes.map[this.x] = {};
       }
       closedNodes.map[this.x][this.y] = true;
+      if (debug && !this.isStartNode) {
+        engine.addRect(
+          this.x * cfg.cellW,
+          this.y * cfg.cellH,
+          cfg.cellW,
+          cfg.cellH,
+          {
+            color: "#ff0000",
+            strokeStyle: "#fff",
+            lineWidth: 2,
+          }
+        );
+        engine.addText(
+          this.fCost,
+          this.x * cfg.cellW + cfg.cellW / 2,
+          this.y * cfg.cellH + cfg.cellH / 2,
+          { size: "14px", align: "center", baseline: "top", color: "#000" }
+        );
+        engine.addText(
+          this.gCost,
+          this.x * cfg.cellW + 5,
+          this.y * cfg.cellH + 15,
+          {
+            size: "10px",
+            align: "left",
+            baseline: "bottom",
+            color: "#000",
+          }
+        );
+        engine.addText(
+          this.hCost,
+          this.x * cfg.cellW + cfg.cellW - 5,
+          this.y * cfg.cellH + 15,
+          { size: "10px", align: "right", baseline: "bottom", color: "#000" }
+        );
+      }
     };
     this.open = function () {
-      if (debug) {
+      if (debug && !this.isStartNode) {
         engine.addRect(
           this.x * cfg.cellW,
           this.y * cfg.cellH,
@@ -208,11 +244,10 @@ function Engine(canvas, config = {}) {
   let iterCount = 0;
   this.findNearestPath = function () {
     let node = openNodes.list.shift();
-
+    node.close();
     if (node.x == endNode.x && node.y == endNode.y) {
       return;
     }
-
     let surroundingNodes = getSurroundingNodes(node.x, node.y);
     for (let i = 0; i < surroundingNodes.length; i++) {
       queueNode(surroundingNodes[i]);
