@@ -168,8 +168,10 @@ function Engine(canvas, config = {}) {
 
   this.findNearestPath = function () {
     let node = openNodes.list.shift();
-    let surroundingNodes = this.getSurroundingNodes(node.x, node.y);
-    queueNode(node);
+    let surroundingNodes = getSurroundingNodes(node.x, node.y);
+    for (let i = 0; i < surroundingNodes.length; i++) {
+      queueNode(surroundingNodes[i]);
+    }
   };
 
   let queueNode = function (node) {
