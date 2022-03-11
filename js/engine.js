@@ -138,6 +138,21 @@ function Engine(canvas, config = {}) {
         );
       }
     };
+    this.track = function () {
+      if (debug && !this.isStartNode) {
+        engine.addRect(
+          this.x * cfg.cellW,
+          this.y * cfg.cellH,
+          cfg.cellW,
+          cfg.cellH,
+          {
+            color: "#00b9ff",
+            strokeStyle: "#fff",
+            lineWidth: 2,
+          }
+        );
+      }
+    };
   }
 
   this.generateGrid = function () {
@@ -248,6 +263,7 @@ function Engine(canvas, config = {}) {
     let node = openNodes.list.shift();
     node.close();
     if (node.x == endNode.x && node.y == endNode.y) {
+      tracebackNode(node);
       return;
     }
     let surroundingNodes = getSurroundingNodes(node.x, node.y);
@@ -260,9 +276,20 @@ function Engine(canvas, config = {}) {
 
     iterCount++;
     if (iterCount < breakpoint) {
-      setTimeout(() => {
-        this.findNearestPath();
-      }, 500);
+      this.findNearestPath();
+      // setTimeout(() => {
+      //   this.findNearestPath();
+      // }, 100);
+    }
+  };
+
+  let tracebackNode = function (node) {
+    node.track();
+    if (node.x == startNode.x && node.y == startNode.y) {
+      return;
+    }
+    if (node.parentNode) {
+      tracebackNode(node.parentNode);
     }
   };
 
