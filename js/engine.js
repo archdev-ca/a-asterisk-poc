@@ -63,7 +63,11 @@ function Engine(canvas, config = {}) {
         closedNodes.map[this.x] = {};
       }
       closedNodes.map[this.x][this.y] = true;
-      if (debug && !this.isStartNode) {
+      if (
+        debug &&
+        !this.isStartNode &&
+        !(this.x == endNode.x && this.y == endNode.y)
+      ) {
         engine.addRect(
           this.x * cfg.cellW,
           this.y * cfg.cellH,
@@ -101,7 +105,11 @@ function Engine(canvas, config = {}) {
       }
     };
     this.open = function () {
-      if (debug && !this.isStartNode) {
+      if (
+        debug &&
+        !this.isStartNode &&
+        !(this.x == endNode.x && this.y == endNode.y)
+      ) {
         engine.addRect(
           this.x * cfg.cellW,
           this.y * cfg.cellH,
@@ -139,7 +147,11 @@ function Engine(canvas, config = {}) {
       }
     };
     this.track = function () {
-      if (debug && !this.isStartNode) {
+      if (
+        debug &&
+        !this.isStartNode &&
+        !(this.x == endNode.x && this.y == endNode.y)
+      ) {
         engine.addRect(
           this.x * cfg.cellW,
           this.y * cfg.cellH,
@@ -204,6 +216,7 @@ function Engine(canvas, config = {}) {
       { size: "20px", align: "center", baseline: "middle", color: "#000" }
     );
     endNode = new Node(x, y);
+    endNode.isEndNode = true;
   };
 
   this.addObstacles = function (coords) {
@@ -261,7 +274,6 @@ function Engine(canvas, config = {}) {
   let iterCount = 0;
   this.findNearestPath = function () {
     let node = openNodes.list.shift();
-    node.close();
     if (node.x == endNode.x && node.y == endNode.y) {
       tracebackNode(node);
       return;
@@ -269,17 +281,11 @@ function Engine(canvas, config = {}) {
     let surroundingNodes = getSurroundingNodes(node.x, node.y);
     for (let i = 0; i < surroundingNodes.length; i++) {
       queueNode(surroundingNodes[i]);
-      if (debug) {
-        surroundingNodes[i].open();
-      }
     }
 
     iterCount++;
     if (iterCount < breakpoint) {
       this.findNearestPath();
-      // setTimeout(() => {
-      //   this.findNearestPath();
-      // }, 100);
     }
   };
 
