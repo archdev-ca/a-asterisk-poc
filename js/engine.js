@@ -272,13 +272,14 @@ function Engine(canvas, config = {}) {
 
   let breakpoint = 100;
   let iterCount = 0;
-  this.findNearestPath = function () {
-    findNearestPathRecursive();
+  this.findNearestPath = function (node1, node2) {
+    // put node1 to top of openNodes.list
+    findNearestPathRecursive(node1, node2);
   };
 
-  findNearestPathRecursive = function () {
+  findNearestPathRecursive = function (node1, node2) {
     let node = openNodes.list.shift();
-    if (node.x == endNode.x && node.y == endNode.y) {
+    if (node.x == node2.x && node.y == node2.y) {
       tracebackNode(node);
       return;
     }
