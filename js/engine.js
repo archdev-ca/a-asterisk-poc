@@ -270,6 +270,8 @@ function Engine(canvas, config = {}) {
     }
   };
 
+  this.getNode = function (x, y) {};
+
   let breakpoint = 100;
   let iterCount = 0;
   this.findNearestPath = function (node1, node2) {
