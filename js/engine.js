@@ -270,16 +270,14 @@ function Engine(canvas, config = {}) {
     }
   };
 
-  this.getNode = function (x, y) {};
-
   let breakpoint = 100;
   let iterCount = 0;
-  this.findNearestPath = function (node1, node2) {
+  this.findNearestPath = function () {
     // put node1 to top of openNodes.list
     openNodes.list = [];
     openNodes.map = {};
-    queueNode(node1);
-    findNearestPathRecursive(node2);
+    queueNode(startNode);
+    findNearestPathRecursive(endNode);
   };
 
   findNearestPathRecursive = function (node2) {
@@ -295,7 +293,7 @@ function Engine(canvas, config = {}) {
 
     iterCount++;
     if (iterCount < breakpoint) {
-      this.findNearestPathRecursive();
+      this.findNearestPathRecursive(node2);
     }
   };
 
