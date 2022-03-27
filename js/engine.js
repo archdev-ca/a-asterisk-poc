@@ -167,6 +167,11 @@ function Engine(canvas, config = {}) {
     };
   }
 
+  function Player(x, y) {
+    this.velocity = 0;
+    this.direction = "h"; // h | v
+  }
+
   this.generateGrid = function () {
     canvas.width = `${cfg.cellW * cfg.gridW}`;
     canvas.height = `${cfg.cellH * cfg.gridH}`;
@@ -269,6 +274,8 @@ function Engine(canvas, config = {}) {
       c.strokeRect(x, y, width, height);
     }
   };
+
+  this.createPlayer = function (x, y) {};
 
   let breakpoint = 100;
   let iterCount = 0;

@@ -19,3 +19,7 @@ engine.addObstacles([
 function solve() {
   engine.findNearestPath();
 }
+
+window.addEventListener("keydown", function (e) {
+  console.log(e);
+});
