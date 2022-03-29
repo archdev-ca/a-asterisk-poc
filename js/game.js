@@ -22,4 +22,14 @@ function solve() {
 
 window.addEventListener("keydown", function (e) {
   console.log(e);
+  switch (e.key) {
+    case "ArrowUp":
+      break;
+    case "ArrowDown":
+      break;
+    case "ArrowLeft":
+      break;
+    case "ArrowRight":
+      break;
+  }
 });
